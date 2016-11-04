@@ -32,12 +32,14 @@ protected:
     void replacement_background_parse_file();
     void compare_pixels();
     void replace_pixels();
+    void blend_pixels();
 public:
     PhotoFile(string infile, string outfile);
     void grey_scale(); // edits the file in the file variable and writes to outfile
     void colorize();
     void subtract_background(string background_filename);
     void replace_background(string background_filename,string replacement_background_filename);
+    void blend_photo(string other_photo_name);
 };
 PhotoFile::PhotoFile(string i, string o) {
     infile = new ifstream(i);
@@ -215,11 +217,25 @@ void PhotoFile:: replace_background(string background_filename, string replaceme
     *outfile << replacement_background_headers[3] << endl;
     replace_pixels();
 }
+void PhotoFile:: blend_pixels() {
+    for (int i = 0; i < numPixels; i++) {
+  *outfile << (pixels[i].r + background_image_pixels[i].r)/2 << " "<< (pixels[i].g + background_image_pixels[i].g)/2<< " " << (pixels[i].b + background_image_pixels[i].b)/2 << endl;
+    }
+}
+void PhotoFile:: blend_photo(string other_photo_name) {
+    background_file = new ifstream(other_photo_name);
+    background_parse_file();
+    *outfile << headers[0] << endl;
+    *outfile << headers[1] << endl;
+    *outfile << headers[2] << endl;
+    *outfile << headers[3] << endl;
+    blend_pixels();
+}
 int main(int argc, const char * argv[]) {
 //    string file_name;
 //    string file_conversion_type;
-    PhotoFile photo("image009.ppm","output.ppm");
-    photo.replace_background("image001.ppm", "butterfly.ppm");
+    PhotoFile photo("output.ppm","output.ppm");
+    photo.blend_photo("tracks.ppm");
 
     
 //    cout << "enter file name with file extension: ";
