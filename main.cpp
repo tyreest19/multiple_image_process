@@ -120,26 +120,9 @@ void PhotoFile::apply_grayscale() {
 
 void PhotoFile:: apply_colorize() {
     for (int i = 0; i < numPixels; i++){
-        if ( 200 < pixels[i].r  ) {
-            continue;
-        }
-        if (pixels[i].r < 200 ){
-            pixels[i].r *= 0.3;
-            pixels[i].g *= 0.59;
-            pixels[i].b *= 0.11;
-        }
-        if ( pixels[i].r < 100 ) {
-            pixels[i].r *= 255;
-            pixels[i].g *= 0;
-            pixels[i].b *= 255;
-        }
-        if (pixels[i].r < 50 ) {
-            pixels[i].r = 0;
-            pixels[i].g *= 255;
-            pixels[i].b *= 55;
-        }
-        
-        
+            pixels[i].r *= 0.4;
+            pixels[i].g *= 2.59;
+            pixels[i].b *= 0.33;
         cout << pixels[i].r << " " <<pixels[i].b << " "<< pixels[i].g << endl;
     }
 }
@@ -231,30 +214,113 @@ void PhotoFile:: blend_photo(string other_photo_name) {
     *outfile << headers[3] << endl;
     blend_pixels();
 }
-int main(int argc, const char * argv[]) {
-//    string file_name;
-//    string file_conversion_type;
-    PhotoFile photo("output.ppm","output.ppm");
-    photo.blend_photo("tracks.ppm");
-
-    
-//    cout << "enter file name with file extension: ";
-//    getline(cin,file_name);
-//    cout << "do you want to colorize or gray scale your photo" << endl;
-//    cout << "enter color for colorize   or gray for grayscale: ";
-//    getline(cin,file_conversion_type);
-//    while (file_conversion_type != "color" && file_conversion_type != "gray") {
-//        cout << "please enter color or gray: ";
-//        getline(cin,file_conversion_type);
-//    }
-//    if (file_conversion_type == "gray") {
-//        PhotoFile photo(file_name,"converted_file.ppm");
-//        photo.grey_scale();
-//        
-//    }
-//    if (file_conversion_type == "color") {
-//        PhotoFile photo(file_name,"converted_file.ppm");
-//        photo.colorize();
-//    }
+void clear_input_buffer();
+void convert_grayscale();
+void convert_to_color();
+void erase_background();
+void change_background();
+void blend_background();
+void menu();
+int main() {
+    int decission;
+    do{
+        cout << "enter 1 to continue and enter 0 to quit: " << endl;
+        cin >> decission;
+        if (decission == 1) {
+            menu();
+        }
+    }while(decission != 0);
     return 0;
 }
+
+void menu() {
+    int decission;
+    do {
+        cout << "type 1 to convert photo to black and white: " << endl;
+        cout << "type 2 to convert black and white to color: " << endl;
+        cout << "type 3 to earse background of a photo: " << endl;
+        cout << "type 4 to change background of a photo: " << endl;
+        cout << "type 5 to blend two photos: " << endl;
+        cin >> decission;
+    } while (decission != 1 && decission != 2 && decission != 3 && decission != 4 && decission != 5);
+    if (decission == 1) {
+        convert_grayscale();
+    }
+    if (decission == 2) {
+        convert_to_color();
+    }
+    if (decission == 3) {
+        erase_background();
+    }
+    if (decission == 4) {
+        change_background();
+    }
+    if (decission == 5) {
+         blend_background();
+    }
+}
+void clear_input_buffer() {
+    cin.clear();
+    cin.ignore();
+}
+void convert_grayscale() {
+    clear_input_buffer();
+    string file_name;
+    cout << "enter name of file to be gray scaled: ";
+    getline(cin, file_name);
+    PhotoFile photo(file_name,"output.ppm");
+    photo.grey_scale();
+}
+void convert_to_color() {
+    clear_input_buffer();
+    string file_name;
+    cout << "enter name of file to be colorized: ";
+    getline(cin, file_name);
+    PhotoFile photo(file_name,"output.ppm");
+    photo.colorize();
+}
+void erase_background() {
+    clear_input_buffer();
+    string file_name,file_name2;
+    cout << "enter name of the file with foreground: ";
+    getline(cin, file_name);
+    cout << "enter the name of the background file: ";
+    getline(cin,file_name2);
+    PhotoFile photo(file_name,"output.ppm");
+    photo.subtract_background(file_name2);
+    photo.grey_scale();
+}
+void change_background() {
+    clear_input_buffer();
+    string file_name,file_name2,file_name3;
+    cout << "enter name of the file with foreground: ";
+    getline(cin, file_name);
+    cout << "enter the name of the file with the  background: ";
+    getline(cin,file_name2);
+    cout << "enter the name of file with new background: ";
+    getline(cin,file_name3);
+    PhotoFile photo(file_name,"output.ppm");
+    photo.replace_background(file_name2, file_name3);
+}
+void blend_background() {
+    clear_input_buffer();
+    string file_name,file_name2;
+    cout << "enter name of the first file: ";
+    getline(cin, file_name);
+    cout << "enter the name of the second file: ";
+    getline(cin,file_name2);
+    PhotoFile photo(file_name,"output.ppm");
+    photo.blend_photo(file_name2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
